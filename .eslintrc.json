@@ -1,0 +1,15 @@
+{
+	"extends": "eslint:recommended",
+	"env": {
+		"browser": true,
+		"es6": true
+	},
+	"globals": {
+		"Router": true,
+		"FileReceiver": true,
+		"RTCMultiSession": true
+	},
+	"rules": {
+		"no-console": 0
+	}
+}

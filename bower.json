@@ -1,0 +1,19 @@
+{
+  "name": "webrtc-reversi",
+  "homepage": "https://github.com/bmwalters/webrtc-reversi",
+  "description": "",
+  "main": "",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "director": "^1.2.8",
+    "webrtc-adapter": "^3.3.1"
+  }
+}

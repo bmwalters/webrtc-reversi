@@ -1,0 +1,62 @@
+@keyframes fadein {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+body {
+	margin: 0;
+	background-color: #e3e3e3;
+	font-family: sans-serif;
+	color: rgba(0, 0, 0, 0.87);
+	animation: fadein 1s;
+}
+
+.hidden {
+	display: none;
+}
+
+.page-content-container {
+	margin: 42px auto;
+	max-width: 816px;
+}
+
+.page-content {
+	margin-bottom: 24px;
+	padding: 32px 50px 40px 50px;
+	background-color: white;
+	box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.12), 0px 2px 2px rgba(0, 0, 0, 0.22);
+	border-radius: 4px;
+	position: relative;
+}
+
+.bottom-button-container {
+	display: flex;
+}
+
+.bottom-button-container button {
+	flex: 0 0 auto;
+}
+
+.bottom-button-container .right-button {
+	margin-left: auto;
+}
+
+.bottom-button-container .left-button {
+	margin-right: auto;
+}
+
+h1 {
+	margin-top: 0;
+}
+
+.text-success {
+	color: #468847;
+}
+
+.text-info {
+	color: #3a87ad;
+}

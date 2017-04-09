@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>WebRTC Reversi</title>
+	<link rel="stylesheet" href="css/style.css">
+	<script src="bower_components/webrtc-adapter/release/adapter.js"></script>
+	<script src="bower_components/director/build/director.min.js"></script>
+	<script async src="js/serverless-webrtc.js"></script>
+</head>
+<body>
+	<div id="createOrJoinPage" class="page-content-container hidden">
+		<div class="page-content">
+			<h1>Create or join a room?</h1>
+
+			<div class="bottom-button-container">
+				<button onclick="App.router.setRoute('/join-room')">Join</button>
+				<button id="createRoomButton">Create</button>
+			</div>
+		</div>
+	</div>
+
+	<div id="showLocalOfferPage" class="page-content-container hidden">
+		<div class="page-content">
+			<h1>Send your local offer to someone else</h1>
+
+			<p>Here's your "offer" -- it tells someone else how to connect to you.</p>
+			<p>Send the whole thing to them, for example in an instant message or e-mail.</p>
+
+			<textarea id="localOfferText" rows="10" cols="100"></textarea>
+
+			<button onclick="App.router.setRoute('/create-room/await-answer')">Okay, I sent it.</button>
+		</div>
+	</div>
+
+	<div id="getRemoteAnswerPage" class="page-content-container hidden">
+		<div class="page-content">
+			<h1>Paste the "answer" you received</h1>
+
+			<p>Now paste in the "answer" that was sent back to you.</p>
+
+			<textarea id="remoteAnswerInput" rows="10" cols="100"></textarea>
+
+			<button id="answerReceivedButton">Okay, I pasted it.</button>
+		</div>
+	</div>
+
+	<div id="getRemoteOfferPage" class="page-content-container hidden">
+		<div class="page-content">
+			<h1>Paste the "offer" you received</h1>
+
+			<p>The person who created the room will send you an "offer" string. Paste it here.</p>
+
+			<textarea id="remoteOfferInput" rows="10" cols="100"></textarea>
+
+			<button id="remoteOfferReceivedButton">Okay, I pasted it.</button>
+		</div>
+	</div>
+
+	<div id="showLocalAnswerPage" class="page-content-container hidden">
+		<div class="page-content">
+			<h1>Send your local answer to someone else</h1>
+
+			<p>Here's your "answer" - it tells someone else how to connect to you.</p>
+			<p>Send the whole thing to them, for example in an instant message or e-mail.</p>
+
+			<textarea id="localAnswerText" rows="10" cols="100"></textarea>
+
+			<button onclick="App.router.setRoute('/await-connection')">Okay, I sent it.</button>
+		</div>
+	</div>
+
+	<div id="waitForConnectionPage" class="page-content-container hidden">
+		<div class="page-content">
+			<h1>Waiting for connection</h1>
+
+			<p>This dialog will disappear when a connection is made.</p>
+
+			<img class="spinner" src="img/spinner.gif"></img>
+		</div>
+	</div>
+
+	<div id="gamePage" class="page-content-container hidden">
+		<div class="page-content">
+			<h1>Serverless WebRTC Chat Demo</h1>
+
+			<div class="text-info" id="chatlog"></div>
+
+			<input type="text" id="messageTextBox" placeholder="Type your message here">
+			<button type="submit" id="sendMessageButton">Send message</button>
+		</div>
+	</div>
+</body>
+</html>
