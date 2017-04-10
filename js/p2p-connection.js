@@ -8,15 +8,25 @@ class Emitter {
 	}
 }
 
+let peerConnectionConfig = {
+	"iceServers": [
+		{
+			"urls": [
+				"stun:stun1.l.google.com:19302",
+				"stun:stun2.l.google.com:19302",
+				"stun:stun3.l.google.com:19302",
+				"stun:stun4.l.google.com:19302"
+			]
+		}
+	]
+}
+
 // eslint-disable-next-line no-redeclare, no-unused-vars
 class P2PHostConnection extends Emitter {
 	constructor() {
 		super()
 
-		this.pc = new RTCPeerConnection(
-			{ "iceServers": [{ "urls": ["stun:23.21.150.121"] }] },
-			{ "optional": [{ "DtlsSrtpKeyAgreement": true }] }
-		)
+		this.pc = new RTCPeerConnection(peerConnectionConfig)
 
 		this.pc.onicecandidate = (e) => {
 			if (e.candidate == null) {
@@ -71,10 +81,7 @@ class P2PJoinerConnection extends Emitter {
 	constructor() {
 		super()
 
-		this.pc = new RTCPeerConnection(
-			{ "iceServers": [{ "urls": ["stun:23.21.150.121"] }] },
-			{ "optional": [{ "DtlsSrtpKeyAgreement": true }] }
-		)
+		this.pc = new RTCPeerConnection(peerConnectionConfig)
 
 		this.pc.onicecandidate = (e) => {
 			if (e.candidate == null) {
