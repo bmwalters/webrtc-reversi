@@ -68,10 +68,14 @@ document.querySelector("#createRoomButton").addEventListener("click", function()
 		writeToChatLog(e.detail.message, "text-info")
 	})
 
+	connection.addEventListener("iceCandidate", (e) => {
+		document.querySelector("#localOfferText").innerText = JSON.stringify(e.detail)
+	})
+
 	connection.createOffer()
 	.then((offerDesc) => {
 		console.log("Created local offer", offerDesc)
-		document.querySelector("#localOfferText").innerText = JSON.stringify(offerDesc)
+		// document.querySelector("#localOfferText").innerText = JSON.stringify(offerDesc)
 		App.router.setRoute("/create-room")
 	})
 	.catch(() => {
@@ -109,6 +113,10 @@ document.querySelector("#joinRoomButton").addEventListener("click", function() {
 		writeToChatLog(e.detail.message, "text-info")
 	})
 
+	connection.addEventListener("iceCandidate", (e) => {
+		document.querySelector("#localAnswerText").innerText = JSON.stringify(e.detail)
+	})
+
 	App.router.setRoute("/join-room")
 })
 
@@ -126,7 +134,7 @@ document.querySelector("#remoteOfferReceivedButton").addEventListener("click", f
 	connection.createAnswer()
 	.then((answerDesc) => {
 		console.log("Created local answer: ", answerDesc)
-		document.querySelector("#localAnswerText").innerText = JSON.stringify(answerDesc)
+		// document.querySelector("#localAnswerText").innerText = JSON.stringify(answerDesc)
 		App.router.setRoute("/join-room/send-answer")
 	})
 	.catch(() => {

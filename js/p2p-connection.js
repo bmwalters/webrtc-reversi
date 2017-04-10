@@ -18,6 +18,12 @@ class P2PHostConnection extends Emitter {
 			{ "optional": [{ "DtlsSrtpKeyAgreement": true }] }
 		)
 
+		this.pc.onicecandidate = (e) => {
+			if (e.candidate == null) {
+				this.dispatchEvent(new CustomEvent("iceCandidate", { detail: this.pc.localDescription }))
+			}
+		}
+
 		this.pc.onconnection = () => {
 			this.dispatchEvent(new CustomEvent("peerConnection"))
 		}
@@ -26,11 +32,11 @@ class P2PHostConnection extends Emitter {
 	createOffer() {
 		this.dc = this.pc.createDataChannel("test", { reliable: true })
 
-		this.dc.onopen = function() {
+		this.dc.onopen = () => {
 			this.dispatchEvent(new CustomEvent("dcOpen"))
 		}
 
-		this.dc.onmessage = function(e) {
+		this.dc.onmessage = (e) => {
 			if (e.data.charCodeAt(0) == 2) {
 				// The first message we get from Firefox (but not Chrome)
 				// is literal ASCII 2 and I do not understand why -- if we
@@ -43,7 +49,7 @@ class P2PHostConnection extends Emitter {
 
 		return new Promise((resolve, reject) => {
 			this.pc.createOffer((desc) => {
-				this.pc.setLocalDescription(desc, function() {}, function() {})
+				this.pc.setLocalDescription(desc, () => {}, () => {})
 				resolve(desc)
 			}, () => {
 				reject()
@@ -69,6 +75,12 @@ class P2PJoinerConnection extends Emitter {
 			{ "iceServers": [{ "urls": ["stun:23.21.150.121"] }] },
 			{ "optional": [{ "DtlsSrtpKeyAgreement": true }] }
 		)
+
+		this.pc.onicecandidate = (e) => {
+			if (e.candidate == null) {
+				this.dispatchEvent(new CustomEvent("iceCandidate", { detail: this.pc.localDescription }))
+			}
+		}
 
 		this.pc.onconnection = () => {
 			this.dispatchEvent(new CustomEvent("peerConnection"))
