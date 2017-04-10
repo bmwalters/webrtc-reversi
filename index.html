@@ -6,6 +6,7 @@
 	<link rel="stylesheet" href="css/style.css">
 	<script src="bower_components/webrtc-adapter/release/adapter.js"></script>
 	<script src="bower_components/director/build/director.min.js"></script>
+	<script src="js/p2p-connection.js"></script>
 	<script async src="js/serverless-webrtc.js"></script>
 </head>
 <body>
@@ -14,7 +15,7 @@
 			<h1>Create or join a room?</h1>
 
 			<div class="bottom-button-container">
-				<button onclick="App.router.setRoute('/join-room')">Join</button>
+				<button id="joinRoomButton">Join</button>
 				<button id="createRoomButton">Create</button>
 			</div>
 		</div>
