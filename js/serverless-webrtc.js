@@ -1,3 +1,47 @@
+const BLACK = "black"
+const WHITE = "white"
+
+class ReversiGame {
+	constructor(boardElement, localColor) {
+		this.boardElement = boardElement
+		this.localColor = localColor
+		this.nextTurn = WHITE
+		this.boardElement.classList.add(`local-${localColor}`)
+		this.boardElement.classList.add(`next-${this.nextTurn}`)
+	}
+
+	setupGameboard() {
+		if (this.boardElement.children.length > 0) {
+			for (let i = 0; i < 64; i++) {
+				let cell = this.boardElement.children[i]
+
+				cell.classList.remove(BLACK)
+				cell.classList.remove(WHITE)
+
+				if (i == 27 || i == 36) {
+					cell.classList.add(BLACK)
+				} else if (i == 28 || i == 35) {
+					cell.classList.add(WHITE)
+				}
+			}
+		} else {
+			for (let i = 0; i < 64; i++) {
+				let cell = document.createElement("div")
+
+				cell.classList.add("cell")
+
+				if (i == 27 || i == 36) {
+					cell.classList.add(BLACK)
+				} else if (i == 28 || i == 35) {
+					cell.classList.add(WHITE)
+				}
+
+				this.boardElement.appendChild(cell)
+			}
+		}
+	}
+}
+
 let App = {
 	get activePage() {
 		return this._activePage
@@ -52,6 +96,7 @@ let writeToChatLog = function(message, messageType) {
 }
 
 let connection
+let reversiGame
 
 document.querySelector("#createRoomButton").addEventListener("click", function() {
 	connection = new P2PHostConnection()
@@ -59,6 +104,8 @@ document.querySelector("#createRoomButton").addEventListener("click", function()
 	connection.addEventListener("dcOpen", () => {
 		console.log("Datachannel connected")
 		writeToChatLog("Datachannel connected", "text-success")
+		reversiGame = new ReversiGame(document.querySelector("#gameBoard"), WHITE)
+		reversiGame.setupGameboard()
 		App.router.setRoute("/game")
 	})
 
@@ -104,6 +151,8 @@ document.querySelector("#joinRoomButton").addEventListener("click", function() {
 	connection.addEventListener("dcOpen", () => {
 		console.log("Datachannel connected")
 		writeToChatLog("Datachannel connected", "text-success")
+		reversiGame = new ReversiGame(document.querySelector("#gameBoard"), BLACK)
+		reversiGame.setupGameboard()
 		App.router.setRoute("/game")
 	})
 
@@ -142,16 +191,16 @@ document.querySelector("#remoteOfferReceivedButton").addEventListener("click", f
 	})
 })
 
-document.querySelector("#sendMessageButton").addEventListener("click", function() {
-	let messageBox = document.querySelector("#messageTextBox")
+document.querySelector("#chatContainer input").addEventListener("keypress", function(e) {
+	if (event.which == 13 || e.keyCode == 13) {
+		let messageBox = document.querySelector("#chatContainer input")
 
-	if (messageBox.value) {
-		writeToChatLog(messageBox.value, "text-success")
+		if (messageBox.value) {
+			writeToChatLog(messageBox.value, "text-success")
 
-		connection.sendMessage(messageBox.value)
+			connection.sendMessage(messageBox.value)
 
-		messageBox.value = ""
+			messageBox.value = ""
+		}
 	}
-
-	return false
 })

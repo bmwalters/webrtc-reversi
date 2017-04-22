@@ -60,3 +60,78 @@ h1 {
 .text-info {
 	color: #3a87ad;
 }
+
+#gamePage .page-content {
+	display: flex;
+	justify-content: space-between;
+	align-items: stretch;
+}
+
+#gameBoard {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-around;
+	align-content: space-around;
+	flex: 0 0 auto;
+	width: 440px;
+	height: 440px;
+	background-color: black
+}
+
+.cell {
+	flex: 0 0 auto;
+	width: 52px;
+	height: 52px;
+	background-color: #309b63;
+}
+
+.cell.white:after,
+.cell.black:after,
+#gameBoard.local-white.next-white .cell:not(.white):not(.black):hover:after,
+#gameBoard.local-black.next-black .cell:not(.white):not(.black):hover:after {
+	content: "";
+	display: block;
+	width: 80%;
+	height: 80%;
+	margin-left: 10%;
+	margin-top: 10%;
+	border-radius: 50%;
+}
+
+.cell.white:after {
+	background-color: white;
+}
+
+.cell.black:after {
+	background-color: black;
+}
+
+#gameBoard.local-white.next-white .cell:not(.white):not(.black):hover:after {
+	background-color: rgba(255, 255, 255, 0.5);
+}
+
+#gameBoard.local-black.next-black .cell:not(.white):not(.black):hover:after {
+	background-color: rgba(0, 0, 0, 0.5);
+}
+
+#chatContainer {
+	flex: 0 0 auto;
+	width: 30%;
+	margin-left: 1%;
+	background-color: #e3e3e3;
+}
+
+#chatContainer input {
+	width: 98%;
+	height: 20px;
+}
+
+#chatlog {
+	color: #3a87ad;
+	overflow-y: scroll;
+	height: 430px;
+}
+
+#chatlog p {
+	margin-top: 0;
+}
