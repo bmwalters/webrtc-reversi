@@ -131,12 +131,7 @@
     "no-mixed-operators": 1,
     "no-mixed-requires": 1,
     "no-mixed-spaces-and-tabs": 1,
-    "no-multi-spaces": [1, {
-      "exceptions": {
-        "ArrayExpression": true,
-        "ObjectExpression": true
-      }
-    }],
+    "no-multi-spaces": 0,
     "no-multi-str": 1,
     "no-multiple-empty-lines": 1,
     "no-negated-condition": 0,
