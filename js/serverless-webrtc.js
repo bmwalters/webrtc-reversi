@@ -2,12 +2,31 @@ const BLACK = "black"
 const WHITE = "white"
 
 class ReversiGame {
-	constructor(boardElement, localColor) {
+	get localColor() { return this._localColor }
+	set localColor(value) {
+		this.boardElement.classList.add(`local-${value}`)
+
+		this._localColor = value
+	}
+
+	get nextTurn() { return this._nextTurn }
+	set nextTurn(value) {
+		if (this._nextTurn) {
+			this.boardElement.classList.remove(`next-${this._nextTurn}`)
+		}
+
+		this.boardElement.classList.add(`next-${value}`)
+
+		this._nextTurn = value
+	}
+
+	constructor(connection, boardElement, localColor) {
+		this.connection = connection
 		this.boardElement = boardElement
 		this.localColor = localColor
+		this.remoteColor = (localColor === WHITE) ? BLACK : WHITE
 		this.nextTurn = WHITE
-		this.boardElement.classList.add(`local-${localColor}`)
-		this.boardElement.classList.add(`next-${this.nextTurn}`)
+		this.cellClicked = this.cellClicked.bind(this)
 	}
 
 	setupGameboard() {
@@ -28,6 +47,9 @@ class ReversiGame {
 			for (let i = 0; i < 64; i++) {
 				let cell = document.createElement("div")
 
+				cell.dataset.cellIndex = i
+				cell.addEventListener("click", this.cellClicked)
+
 				cell.classList.add("cell")
 
 				if (i == 27 || i == 36) {
@@ -39,6 +61,24 @@ class ReversiGame {
 				this.boardElement.appendChild(cell)
 			}
 		}
+	}
+
+	cellClicked(e) {
+		if (this.nextTurn !== this.localColor) { return }
+
+		let cell = e.currentTarget
+		let cellIndex = cell.dataset.cellIndex
+
+		this.boardElement.children[cellIndex].classList.add(this.localColor)
+
+		this.connection.sendMessage({ type: "move", cell: cellIndex })
+
+		this.nextTurn = this.remoteColor
+	}
+
+	processRemoteMove(cellIndex) {
+		this.boardElement.children[cellIndex].classList.add(this.remoteColor)
+		this.nextTurn = this.localColor
 	}
 }
 
@@ -98,13 +138,22 @@ let writeToChatLog = function(message, messageType) {
 let connection
 let reversiGame
 
+let messageHandlers = {
+	"chat": (message) => {
+		writeToChatLog(message.text, "text-info")
+	},
+	"move": (message) => {
+		reversiGame.processRemoteMove(message.cell)
+	}
+}
+
 document.querySelector("#createRoomButton").addEventListener("click", function() {
 	connection = new P2PHostConnection()
 
 	connection.addEventListener("dcOpen", () => {
 		console.log("Datachannel connected")
 		writeToChatLog("Datachannel connected", "text-success")
-		reversiGame = new ReversiGame(document.querySelector("#gameBoard"), WHITE)
+		reversiGame = new ReversiGame(connection, document.querySelector("#gameBoard"), WHITE)
 		reversiGame.setupGameboard()
 		App.router.setRoute("/game")
 	})
@@ -112,7 +161,9 @@ document.querySelector("#createRoomButton").addEventListener("click", function()
 	connection.addEventListener("dcMessage", (e) => {
 		console.log("Got message (host)", e.detail)
 
-		writeToChatLog(e.detail.message, "text-info")
+		if (messageHandlers[e.detail.message.type]) {
+			messageHandlers[e.detail.message.type](e.detail.message)
+		}
 	})
 
 	connection.addEventListener("iceCandidate", (e) => {
@@ -151,7 +202,7 @@ document.querySelector("#joinRoomButton").addEventListener("click", function() {
 	connection.addEventListener("dcOpen", () => {
 		console.log("Datachannel connected")
 		writeToChatLog("Datachannel connected", "text-success")
-		reversiGame = new ReversiGame(document.querySelector("#gameBoard"), BLACK)
+		reversiGame = new ReversiGame(connection, document.querySelector("#gameBoard"), BLACK)
 		reversiGame.setupGameboard()
 		App.router.setRoute("/game")
 	})
@@ -159,7 +210,9 @@ document.querySelector("#joinRoomButton").addEventListener("click", function() {
 	connection.addEventListener("dcMessage", (e) => {
 		console.log("Got message (joiner)", e.detail)
 
-		writeToChatLog(e.detail.message, "text-info")
+		if (messageHandlers[e.detail.message.type]) {
+			messageHandlers[e.detail.message.type](e.detail.message)
+		}
 	})
 
 	connection.addEventListener("iceCandidate", (e) => {
@@ -198,7 +251,7 @@ document.querySelector("#chatContainer input").addEventListener("keypress", func
 		if (messageBox.value) {
 			writeToChatLog(messageBox.value, "text-success")
 
-			connection.sendMessage(messageBox.value)
+			connection.sendMessage({ type: "chat", text: messageBox.value })
 
 			messageBox.value = ""
 		}
