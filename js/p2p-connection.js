@@ -1,4 +1,4 @@
-class Emitter {
+const Emitter = class {
 	constructor() {
 		let delegate = document.createDocumentFragment()
 
@@ -8,7 +8,7 @@ class Emitter {
 	}
 }
 
-let peerConnectionConfig = {
+const peerConnectionConfig = {
 	"iceServers": [
 		{
 			"urls": [
@@ -22,7 +22,7 @@ let peerConnectionConfig = {
 }
 
 // eslint-disable-next-line no-redeclare, no-unused-vars
-class P2PHostConnection extends Emitter {
+const P2PHostConnection = class extends Emitter {
 	constructor() {
 		super()
 
@@ -40,35 +40,23 @@ class P2PHostConnection extends Emitter {
 	}
 
 	createOffer() {
-		this.dc = this.pc.createDataChannel("test", { reliable: true })
+		this.dc = this.pc.createDataChannel("", { reliable: true })
 
 		this.dc.onopen = () => {
 			this.dispatchEvent(new CustomEvent("dcOpen"))
 		}
 
-		this.dc.onmessage = (e) => {
-			if (e.data.charCodeAt(0) == 2) {
-				// The first message we get from Firefox (but not Chrome)
-				// is literal ASCII 2 and I do not understand why -- if we
-				// leave it in, JSON.parse() will barf.
-				return
-			}
-
-			this.dispatchEvent(new CustomEvent("dcMessage", { detail: JSON.parse(e.data) }))
+		this.dc.onmessage = (messageEvent) => {
+			this.dispatchEvent(new CustomEvent("dcMessage", { detail: JSON.parse(messageEvent.data) }))
 		}
 
-		return new Promise((resolve, reject) => {
-			this.pc.createOffer((desc) => {
-				this.pc.setLocalDescription(desc, () => {}, () => {})
-				resolve(desc)
-			}, () => {
-				reject()
-			})
+		return this.pc.createOffer().then((desc) => {
+			this.pc.setLocalDescription(desc, () => {}, () => {})
 		})
 	}
 
 	setAnswer(answer) {
-		this.pc.setRemoteDescription(new RTCSessionDescription(answer))
+		return this.pc.setRemoteDescription(answer)
 	}
 
 	sendMessage(message) {
@@ -77,7 +65,7 @@ class P2PHostConnection extends Emitter {
 }
 
 // eslint-disable-next-line no-redeclare, no-unused-vars
-class P2PJoinerConnection extends Emitter {
+const P2PJoinerConnection = class extends Emitter {
 	constructor() {
 		super()
 
@@ -94,9 +82,7 @@ class P2PJoinerConnection extends Emitter {
 		}
 
 		this.pc.ondatachannel = (e) => {
-			let datachannel = e.channel || e // Chrome sends event, FF sends raw channel
-
-			this.dc = datachannel
+			this.dc = e.channel
 
 			this.dc.onopen = () => {
 				this.dispatchEvent(new CustomEvent("dcOpen"))
@@ -109,17 +95,12 @@ class P2PJoinerConnection extends Emitter {
 	}
 
 	setOffer(offerDesc) {
-		this.pc.setRemoteDescription(offerDesc)
+		return this.pc.setRemoteDescription(offerDesc)
 	}
 
 	createAnswer() {
-		return new Promise((resolve, reject) => {
-			this.pc.createAnswer((answerDesc) => {
-				this.pc.setLocalDescription(answerDesc)
-				resolve(answerDesc)
-			}, () => {
-				reject()
-			})
+		return this.pc.createAnswer().then((answerDesc) => {
+			this.pc.setLocalDescription(answerDesc)
 		})
 	}
 
