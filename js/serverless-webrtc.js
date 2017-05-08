@@ -235,7 +235,7 @@ App.router = (new Router({
 	"/game": function() {
 		App.activePage = document.querySelector("#gamePage")
 	}
-})).init("/#/home")
+})).init("/home")
 
 let writeToChatLog = function(message, messageType) {
 	let p = document.createElement("p")
