@@ -13,8 +13,6 @@ let peerConnectionConfig = {
 		{
 			"urls": [
 				"stun:stun1.l.google.com:19302",
-				"stun:stun2.l.google.com:19302",
-				"stun:stun3.l.google.com:19302",
 				"stun:stun4.l.google.com:19302"
 			]
 		}
@@ -30,7 +28,7 @@ class P2PHostConnection extends Emitter {
 
 		this.pc.onicecandidate = (e) => {
 			if (e.candidate == null) {
-				this.dispatchEvent(new CustomEvent("iceCandidate", { detail: this.pc.localDescription }))
+				this.dispatchEvent(new CustomEvent("iceGatheringFinished", { detail: this.pc.localDescription }))
 			}
 		}
 
@@ -57,14 +55,7 @@ class P2PHostConnection extends Emitter {
 			this.dispatchEvent(new CustomEvent("dcMessage", { detail: JSON.parse(e.data) }))
 		}
 
-		return new Promise((resolve, reject) => {
-			this.pc.createOffer((desc) => {
-				this.pc.setLocalDescription(desc, () => {}, () => {})
-				resolve(desc)
-			}, () => {
-				reject()
-			})
-		})
+		return this.pc.createOffer().then(this.pc.setLocalDescription.bind(this.pc))
 	}
 
 	setAnswer(answer) {
@@ -85,7 +76,7 @@ class P2PJoinerConnection extends Emitter {
 
 		this.pc.onicecandidate = (e) => {
 			if (e.candidate == null) {
-				this.dispatchEvent(new CustomEvent("iceCandidate", { detail: this.pc.localDescription }))
+				this.dispatchEvent(new CustomEvent("iceGatheringFinished", { detail: this.pc.localDescription }))
 			}
 		}
 
@@ -113,14 +104,7 @@ class P2PJoinerConnection extends Emitter {
 	}
 
 	createAnswer() {
-		return new Promise((resolve, reject) => {
-			this.pc.createAnswer((answerDesc) => {
-				this.pc.setLocalDescription(answerDesc)
-				resolve(answerDesc)
-			}, () => {
-				reject()
-			})
-		})
+		return this.pc.createAnswer().then(this.pc.setLocalDescription.bind(this.pc))
 	}
 
 	sendMessage(message) {
